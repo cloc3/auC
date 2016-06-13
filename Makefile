@@ -1,4 +1,5 @@
 PWD = $(shell pwd)
-XX = $(shell basename $(PWD))
+BIN = auC$(shell cat ./version)
 all:
-	g++ *.cpp -o ${XX}
+	g++ *.cpp -o ${BIN}
+	ln -sf $(BIN) auC
