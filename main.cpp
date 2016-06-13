@@ -20,12 +20,14 @@ int main() {
 	char **uList;
 	char *parola;
 	char *parolaLunga;
-	char flusso[BUF_SIZE]={'t','v','h','\b','r','u','\b','\b','h','e','\n'};
+	//char flusso[BUF_SIZE]={'t','v','h','\b','r','u','\b','\b','h','e','\n'};
+	char flusso[BUF_SIZE]={'t','v','h','e','\n'};
 	char chiave[BUF_SIZE];
 	char *puntaFlusso;
 	char *fineChiave;
 	char *puntaChiave;
-	lettera *puntaLettera;
+	lettera *stack[BUF_SIZE];
+	lettera **puntaStack;
 
 #ifdef EVAL
 	freopen("input.txt", "r", stdin);
@@ -44,37 +46,60 @@ int main() {
 			aggiungiStringa(&radice,parola,0,&contaLettere);
 	}
 
-/* inizializzaioni */
+/* inizializzazioni */
 	puntaFlusso=flusso;
+	puntaStack=stack;
 	fineChiave=chiave;
 
-/* lettura input */
+/* lettura del primo carattere */
+	while (*puntaFlusso=='\b' || *puntaFlusso=='\n') puntaFlusso++;
+	*fineChiave++=*puntaFlusso++;
+	puntaChiave=chiave;
+ 	*puntaStack=cercaCarattere(radice->down,*puntaChiave++);
+	*fineChiave='\0';
+	printf("chiave: %s\n",chiave);
+	/* autocompletamento: identico a quello delle lettere successive */
+	if (*puntaStack!=NULL) {
+		printf(" - completamento - ");
+		while ((*puntaStack)->down->carattere!='\0') {
+			printf("%c",(*puntaStack)->down->carattere);
+			*puntaStack=(*puntaStack)->down;
+		}
+	printf("\n");
+	}
+
+		printf("*(puntaFlusso ): %c\n",*(puntaFlusso));
+	/* lettura del resto dell' input */
+
 	while (*puntaFlusso!='\n') {
+	if (fineChiave==chiave) while (*puntaFlusso=='\b' || *puntaFlusso=='\n') puntaFlusso++;
 	/* gestione carattere di backspace  e costruzione del vettore "chiave"*/
-		if (*puntaFlusso!='\b') *fineChiave++=*puntaFlusso++;
-		else {
+	if (fineChiave!=chiave) 
+		if (*puntaFlusso!='\b') {
+			*fineChiave++=*puntaFlusso++;
+		} else {
 			puntaFlusso++;
 			fineChiave--;
 		}
+		printf("*(ripuntaFlusso -1): %c\n",*(fineChiave));
 		*fineChiave='\0';
 		/* ricerca con accesso al database della stringa contenuta nel vettore "chiave"*/
-		puntaChiave=chiave;
 		printf("%s",chiave);
-	 	puntaLettera=cercaCarattere(radice->down,*puntaChiave++);
+		printf("pippo\n");
 		while (puntaChiave!=fineChiave) {
 			/* questa versione tutte le lettere di "chiave" vengono cercate ad ogni nuovo ingresso
  			*  forse sarebbe meglio sarebbe memorizzarle in uno stack e applicare cercaLettera solo all'ultima */
-			puntaLettera=cercaCarattere((puntaLettera)->down,*puntaChiave++);
-			if (puntaLettera==NULL) {
+			*puntaStack=cercaCarattere((*puntaStack++)->down,*puntaChiave++);
+			if (*puntaStack==NULL) {
 				printf("\n");break;
 			}
 		}
 		/* autocompletamento: naviga direttamente il trie */
-		if (puntaLettera!=NULL) {
+		if (*puntaStack!=NULL) {
 			printf(" - completamento - ");
-			while (puntaLettera->down->carattere!='\0') {
-				printf("%c",(puntaLettera)->down->carattere);
-				puntaLettera=puntaLettera->down;
+			while ((*puntaStack)->down->carattere!='\0') {
+				printf("%c",(*puntaStack)->down->carattere);
+				*puntaStack=(*puntaStack)->down;
 			}
 		printf("\n");
 		}
