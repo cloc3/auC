@@ -1,2 +1,3 @@
 version 0.2 goal is to optimize search algorithm, avoing unuseful calls to function cercaCarattere(...).
-
+now auC program is working.
+some more minimal improvement may be done.
