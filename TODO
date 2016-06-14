@@ -1,3 +1,1 @@
-version 0.2 goal is to optimize search algorithm, avoing unuseful calls to function cercaCarattere(...).
-now auC program is working.
-other improvments are delayed to version 0.3.
+version 0.3 goal is to handle input output from command line, no more using a vector inside the code.
