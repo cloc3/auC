@@ -44,7 +44,7 @@ int main() {
 			aggiungiStringa(&radice,parola,0,&contaLettere);
 	}
 
-/* inizializzaioni */
+/* inizializzazioni */
 	puntaFlusso=flusso;
 	fineChiave=chiave;
 
