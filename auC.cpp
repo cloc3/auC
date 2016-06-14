@@ -9,7 +9,6 @@ void creaAlbero(lettera **radice,int *contaLettere) {
 
 void marcaParola(lettera *radice, const char *parola, int segno) {
 	lettera *livello=radice;
-	lettera *stringa=NULL;
 
 	while(1) {
 		lettera *trovato=NULL;
@@ -26,7 +25,6 @@ void marcaParola(lettera *radice, const char *parola, int segno) {
 		if (trovato==NULL) return;
 
 		if (*parola=='\0') {
-			stringa=pt;
 			pt->segno=segno;
 			return;
 		}

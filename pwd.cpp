@@ -9,8 +9,6 @@ char **userList(int *nUsers) {
 	char *wordCursor,*word_Cursor;
 	char **listCursor;
 	char **uList;
-	int i;
-	int length;
 
 	/* Number of users*/
 	*nUsers=0;
@@ -35,18 +33,3 @@ char **userList(int *nUsers) {
 	endpwent();
 	return uList;
 }
-
-/*
-int main() {
-
-	int nUsers;
-	char **uList;
-
-	uList=userList(&nUsers);
-	printf("main uList: %p\n",uList);
-	for (int i=0;i<nUsers;i++) {
- 		printf("main: [%d], %p %s\n",i,uList[i],uList[i]);
-	}
-	return 0;
-}
-*/

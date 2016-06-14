@@ -13,13 +13,11 @@ http://simplestcodings.blogspot.it/2012/11/trie-implementation-in-c.html
 #define BUF_SIZE 200
 
 int main() {
-	int i,n,N;
-	int l=0,max=0;
+	int i,N;
 	int contaLettere=0;
 	lettera *radice;
 	char **uList;
 	char *parola;
-	char *parolaLunga;
 	char flusso[BUF_SIZE]={'t','v','h','\b','r','u','\b','\b','h','e','\n'};
 	//char flusso[BUF_SIZE]={'t','v','h','e','\n'};
 	char chiave[BUF_SIZE];
@@ -28,8 +26,7 @@ int main() {
 	char *puntaChiave;
 	lettera *stack[BUF_SIZE];
 	lettera **puntaStack;
-	lettera **punta2;
-	lettera *auC;
+	lettera *completamento;
 
 #ifdef EVAL
 	freopen("input.txt", "r", stdin);
@@ -63,10 +60,10 @@ int main() {
 	/* autocompletamento: identico a quello delle lettere successive */
 	if (*puntaStack!=NULL) {
 		printf(" - completamento - ");
-		auC=*puntaStack;
-		while (auC->down->carattere!='\0') {
-			printf("%c",auC->down->carattere);
-			auC=auC->down;
+		completamento=*puntaStack;
+		while (completamento->down->carattere!='\0') {
+			printf("%c",completamento->down->carattere);
+			completamento=completamento->down;
 		}
 	printf("\n");
 	}
@@ -87,11 +84,11 @@ int main() {
 			/* autocompletamento: naviga direttamente il trie */
 			if (*puntaStack==NULL) puntaStack--;
 			if ((*puntaStack)->carattere==*(fineChiave-1)) {
-				auC=*puntaStack;
+				completamento=*puntaStack;
 				printf(" - completamento - ");
-				while (auC->down->carattere!='\0') {
-					printf("%c",auC->down->carattere);
-					auC=auC->down;
+				while (completamento->down->carattere!='\0') {
+					printf("%c",completamento->down->carattere);
+					completamento=completamento->down;
 				}
 			}
 			printf("\n");
