@@ -68,8 +68,14 @@ int main() {
 			printf("%c",auC->down->carattere);
 			auC=auC->down;
 		}
-	printf("\n");
+	printf("\n!!!\n");
 	}
+			for (punta2=stack;punta2<=puntaStack;punta2++) {
+				if (*punta2==NULL) printf("punta2: %p,*punta2: %p\n",punta2,*punta2);
+				else if (*punta2!=NULL && (*punta2)->down==NULL) printf("punta2: %p,*punta2: %p,(*punta2)->carattere: %d,(*punta2)->carattere: %c\n",punta2,*punta2,(*punta2)->carattere,(*punta2)->carattere);
+				else printf("punta2: %p,*punta2: %p,(*punta2)->carattere: %d,(*punta2)->down->carattere: %c,(*punta2)->carattere: %d,(*punta2)->down->carattere: %c\n",punta2,*punta2,(*punta2)->carattere,(*punta2)->down->carattere,(*punta2)->carattere,(*punta2)->down->carattere);
+			}
+	printf("\n:!!!\n");
 
 	/* lettura del resto dell' input */
 	while (*puntaFlusso!='\n') {
@@ -85,7 +91,14 @@ int main() {
 			printf("%s\n",chiave);
 			//printf("%s",chiave);
 			/* ricerca con accesso al database della stringa contenuta nel vettore "chiave"*/
+			for (punta2=stack;punta2<=puntaStack;punta2++) {
+				if (*punta2==NULL) printf("punta2: %p,*punta2: %p\n",punta2,*punta2);
+				else if (*punta2!=NULL && (*punta2)->down==NULL) printf("punta2: %p,*punta2: %p,(*punta2)->carattere: %d,(*punta2)->carattere: %c\n",punta2,*punta2,(*punta2)->carattere,(*punta2)->carattere);
+				else printf("punta2: %p,*punta2: %p,(*punta2)->carattere: %d,(*punta2)->down->carattere: %c,(*punta2)->carattere: %d,(*punta2)->down->carattere: %c\n",punta2,*punta2,(*punta2)->carattere,(*punta2)->down->carattere,(*punta2)->carattere,(*punta2)->down->carattere);
+			}
+			printf("\n---\n");
 			*puntaStack=cercaCarattere((*puntaStack++)->down,*(fineChiave-1));
+			printf("stack %p,*stack: %p\n",stack,*stack);
 			for (punta2=stack;punta2<=puntaStack;punta2++) {
 				if (*punta2==NULL) printf("punta2: %p,*punta2: %p\n",punta2,*punta2);
 				else if (*punta2!=NULL && (*punta2)->down==NULL) printf("punta2: %p,*punta2: %p,(*punta2)->carattere: %d,(*punta2)->carattere: %c\n",punta2,*punta2,(*punta2)->carattere,(*punta2)->carattere);
