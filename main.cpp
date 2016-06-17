@@ -23,7 +23,7 @@ void completamento(lettera *comple) {
 
 int main() {
 	int i,N;
-	int semaforo=0,pippo;
+	int semaforo=0;
 	int contaLettere=0;
 	lettera *radice;
 	char **uList;
@@ -79,16 +79,13 @@ int main() {
 			puntaFlusso++;
 			fineChiave--;
 			*fineChiave='\0';
-			pippo=0;
-			if(semaforo>0) {
-				semaforo--;
-				pippo=1;
-			}
 			printf("%s",chiave);
-			if (semaforo==0) {
-				if (pippo==1) completamento(*(puntaStack));
-				else completamento(*(--puntaStack));
+			if (semaforo>1) semaforo--;
+			else if (semaforo==1) {
+				completamento(*(puntaStack));
+				semaforo=0;
 			}
+			else completamento(*(--puntaStack));
 		} else {
 			*fineChiave++=*puntaFlusso++;
 			*fineChiave='\0';
