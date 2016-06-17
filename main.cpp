@@ -7,43 +7,31 @@ http://simplestcodings.blogspot.it/2012/11/trie-implementation-in-c.html
 #include <cstdio>
 #include <cassert>
 
-#include "auC.h"
+#include "auClib.h"
 #include "pwd.h"
 
 #define BUF_SIZE 200
 
-void completamento(lettera *comple) {
-			//completamento=*puntaStack;
-			printf(" - completamento - ");
-			while (comple->down->carattere!='\0') {
-				printf("%c",comple->down->carattere);
-				comple=comple->down;
-			}
-}
-
 int main() {
 	int i,N;
-	int semaforo=0;
-	int contaLettere=0;
-	lettera *radice;
+	int lockFlag=0;
+	lettera *root;
 	char **uList;
 	char *parola;
-	char flusso[BUF_SIZE]={'t','v','h','e','\b','e','a','r','u','\b','\b','d','e','\n'};
-	//char flusso[BUF_SIZE]={'t','v','h','e','\n'};
-	char chiave[BUF_SIZE];
-	char *puntaFlusso;
-	char *fineChiave;
-	char *puntaChiave;
+	char stream[BUF_SIZE]={'t','v','h','e','\b','e','a','r','u','\b','\b','d','e','\n'};
+	char buffer[BUF_SIZE];
+	char *streamPointer;
+	char *bufferEnd;
+	char *bufferPointer;
 	lettera *stack[BUF_SIZE];
-	lettera **puntaStack;
-	//lettera *completamento;
+	lettera **stackPointer;
 
 #ifdef EVAL
 	freopen("input.txt", "r", stdin);
 	freopen("output.txt", "w", stdout);
 #endif
 
-	creaAlbero(&radice,&contaLettere);
+	creaAlbero(&root);
 
 	/* lettura /etc/passwd e popola il trie degli usernames */
 	uList=userList(&N);
@@ -52,52 +40,52 @@ int main() {
 		#ifdef DEBUG
 			printf("%s\n",parola);
 		#endif
-			aggiungiStringa(&radice,parola,0,&contaLettere);
+			aggiungiStringa(&root,parola,0);
 	}
 
 /* inizializzazioni */
-	puntaFlusso=flusso;
-	puntaStack=stack;
-	fineChiave=chiave;
+	streamPointer=stream;
+	stackPointer=stack;
+	bufferEnd=buffer;
 
 /* lettura del primo carattere */
-	while (*puntaFlusso=='\b' || *puntaFlusso=='\n') puntaFlusso++;
-	*fineChiave++=*puntaFlusso++;
-	puntaChiave=chiave;
- 	*puntaStack=cercaCarattere(radice->down,*puntaChiave++);
-	*fineChiave='\0';
-	printf("%s",chiave);
-	/* autocompletamento: identico a quello delle lettere successive */
-	completamento(*puntaStack);
+	while (*streamPointer=='\b' || *streamPointer=='\n') streamPointer++;
+	*bufferEnd++=*streamPointer++;
+	bufferPointer=buffer;
+ 	*stackPointer=cercaCarattere(root->down,*bufferPointer++);
+	*bufferEnd='\0';
+	printf("%s",buffer);
+	/* autocompletion: identico a quello delle lettere successive */
+	completion(*stackPointer);
 	printf("\n---\n");
 
 	/* lettura del resto dell' input */
-	while (*puntaFlusso!='\n') {
-		if (fineChiave==chiave) while (*puntaFlusso=='\b') puntaFlusso++;
+	while (*streamPointer!='\n') {
+		if (bufferEnd==buffer) while (*streamPointer=='\b') streamPointer++;
 		/* gestione carattere di backspace"*/
-		if (*puntaFlusso=='\b') {
-			puntaFlusso++;
-			fineChiave--;
-			*fineChiave='\0';
-			printf("%s",chiave);
-			if (semaforo>1) semaforo--;
-			else if (semaforo==1) {
-				completamento(*(puntaStack));
-				semaforo=0;
+		if (*streamPointer=='\b') {
+			streamPointer++;
+			bufferEnd--;
+			*bufferEnd='\0';
+			printf("%s",buffer);
+			if (lockFlag>1) lockFlag--;
+			else if (lockFlag==1) {
+				completion(*(stackPointer));
+				lockFlag=0;
 			}
-			else completamento(*(--puntaStack));
+			else completion(*(--stackPointer));
 		} else {
-			*fineChiave++=*puntaFlusso++;
-			*fineChiave='\0';
-			printf("%s",chiave);
-			/* ricerca con accesso al database della stringa contenuta nel vettore "chiave"*/
-			*puntaStack=cercaCarattere((*puntaStack++)->down,*(fineChiave-1));
-			/* autocompletamento: naviga direttamente il trie */
-			if (*puntaStack!=NULL) {
-				completamento(*puntaStack);
+			*bufferEnd++=*streamPointer++;
+			*bufferEnd='\0';
+			printf("%s",buffer);
+			/* ricerca con accesso al database della stringa contenuta nel vettore "buffer"*/
+			*stackPointer=cercaCarattere((*stackPointer++)->down,*(bufferEnd-1));
+			/* autocompletion: naviga direttamente il trie */
+			if (*stackPointer!=NULL) {
+				completion(*stackPointer);
 			} else {
-				puntaStack--;
-				semaforo++;
+				lockFlag++;
+				stackPointer--;
 			}
 			}
 		printf("\n---\n");
