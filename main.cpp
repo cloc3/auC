@@ -12,13 +12,23 @@ http://simplestcodings.blogspot.it/2012/11/trie-implementation-in-c.html
 
 #define BUF_SIZE 200
 
+void completamento(lettera *comple) {
+			//completamento=*puntaStack;
+			printf(" - completamento - ");
+			while (comple->down->carattere!='\0') {
+				printf("%c",comple->down->carattere);
+				comple=comple->down;
+			}
+}
+
 int main() {
 	int i,N;
+	int semaforo=0,pippo;
 	int contaLettere=0;
 	lettera *radice;
 	char **uList;
 	char *parola;
-	char flusso[BUF_SIZE]={'t','v','h','\b','r','u','\b','\b','h','e','\n'};
+	char flusso[BUF_SIZE]={'t','v','h','e','\b','e','a','r','u','\b','\b','d','e','\n'};
 	//char flusso[BUF_SIZE]={'t','v','h','e','\n'};
 	char chiave[BUF_SIZE];
 	char *puntaFlusso;
@@ -26,7 +36,7 @@ int main() {
 	char *puntaChiave;
 	lettera *stack[BUF_SIZE];
 	lettera **puntaStack;
-	lettera *completamento;
+	//lettera *completamento;
 
 #ifdef EVAL
 	freopen("input.txt", "r", stdin);
@@ -58,15 +68,8 @@ int main() {
 	*fineChiave='\0';
 	printf("%s",chiave);
 	/* autocompletamento: identico a quello delle lettere successive */
-	if (*puntaStack!=NULL) {
-		printf(" - completamento - ");
-		completamento=*puntaStack;
-		while (completamento->down->carattere!='\0') {
-			printf("%c",completamento->down->carattere);
-			completamento=completamento->down;
-		}
-	printf("\n");
-	}
+	completamento(*puntaStack);
+	printf("\n---\n");
 
 	/* lettura del resto dell' input */
 	while (*puntaFlusso!='\n') {
@@ -75,6 +78,17 @@ int main() {
 		if (*puntaFlusso=='\b') {
 			puntaFlusso++;
 			fineChiave--;
+			*fineChiave='\0';
+			pippo=0;
+			if(semaforo>0) {
+				semaforo--;
+				pippo=1;
+			}
+			printf("%s",chiave);
+			if (semaforo==0) {
+				if (pippo==1) completamento(*(puntaStack));
+				else completamento(*(--puntaStack));
+			}
 		} else {
 			*fineChiave++=*puntaFlusso++;
 			*fineChiave='\0';
@@ -82,17 +96,14 @@ int main() {
 			/* ricerca con accesso al database della stringa contenuta nel vettore "chiave"*/
 			*puntaStack=cercaCarattere((*puntaStack++)->down,*(fineChiave-1));
 			/* autocompletamento: naviga direttamente il trie */
-			if (*puntaStack==NULL) puntaStack--;
-			if ((*puntaStack)->carattere==*(fineChiave-1)) {
-				completamento=*puntaStack;
-				printf(" - completamento - ");
-				while (completamento->down->carattere!='\0') {
-					printf("%c",completamento->down->carattere);
-					completamento=completamento->down;
-				}
+			if (*puntaStack!=NULL) {
+				completamento(*puntaStack);
+			} else {
+				puntaStack--;
+				semaforo++;
 			}
-			printf("\n");
-		}
+			}
+		printf("\n---\n");
 	}
 	return 0;
 }
