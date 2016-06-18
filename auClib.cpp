@@ -1,10 +1,10 @@
 ﻿#include <cstdio>
 #include <cstdlib>
 
-#include "auC.h"
+#include "auClib.h"
 
-void creaAlbero(lettera **radice,int *contaLettere) {
-	*radice = caricaLettera('\0',0,NULL);
+void creaAlbero(lettera **radice) {
+	*radice = caricaLettera('\0',0);
 }
 
 void marcaParola(lettera *radice, const char *parola, int segno) {
@@ -83,7 +83,7 @@ lettera *completamento(lettera *radice, char *parola) {
 	}
 }
 
-lettera *caricaLettera(char carattere, int segno,int *contaLettere) {
+lettera *caricaLettera(char carattere, int segno) {
 	lettera *nodo = NULL;
 	nodo=(lettera *)malloc(sizeof(lettera));
 
@@ -96,11 +96,10 @@ lettera *caricaLettera(char carattere, int segno,int *contaLettere) {
 	nodo->dx=NULL;
 	nodo->down=NULL;
 	nodo->segno=segno;
-	if (contaLettere!=NULL) (*contaLettere)++;
 	return nodo;
 }
 
-void aggiungiStringa(lettera **radice, char *parola, int segno, int *contaLettere) {
+void aggiungiStringa(lettera **radice, char *parola, int segno) {
 	lettera *stringa;
 	/* controllo radice */
 	if (NULL == *radice) {printf("albero vuoto");return;}
@@ -112,14 +111,14 @@ void aggiungiStringa(lettera **radice, char *parola, int segno, int *contaLetter
 
 	if (stringa==NULL) {
 		for(stringa=*radice;*parola;stringa=stringa->down) {
-			stringa->down=caricaLettera(*parola,segno,contaLettere);
+			stringa->down=caricaLettera(*parola,segno);
 		#ifdef DEBUG
 			printf("Ho inserito la lettera: [%c]\n", stringa->down->carattere);
 		#endif
 			parola++;
 		}
 
-		stringa->down=caricaLettera('\0',segno,contaLettere);
+		stringa->down=caricaLettera('\0',segno);
 	#ifdef DEBUG
 		printf("\nInserimento carattere: [%c]\n",stringa->down->carattere);
 	#endif
@@ -145,16 +144,16 @@ void aggiungiStringa(lettera **radice, char *parola, int segno, int *contaLetter
 	while(stringa->dx) {
 		if(*parola == stringa->dx->carattere) {
 			parola++;
-			aggiungiStringa(&(stringa->dx),parola,segno,contaLettere);
+			aggiungiStringa(&(stringa->dx),parola,segno);
 			return;
 		}
 		stringa=stringa->dx;
 	}
 
 	if (*parola) {	//l'if avrebbe senso se volessi distinguere i casi in cui voglio attribuire a segno un valore diverso per i fine parola
-		stringa->dx=caricaLettera(*parola,segno,contaLettere);
+		stringa->dx=caricaLettera(*parola,segno);
 	} else {
-		stringa->dx=caricaLettera(*parola,segno,contaLettere);
+		stringa->dx=caricaLettera(*parola,segno);
 	}
 
 #ifdef DEBUG
@@ -165,14 +164,14 @@ void aggiungiStringa(lettera **radice, char *parola, int segno, int *contaLetter
 	parola++;
 
 	for(stringa=stringa->dx; *parola; stringa=stringa->down) {
-		stringa->down=caricaLettera(*parola,segno,contaLettere);
+		stringa->down=caricaLettera(*parola,segno);
 	#ifdef DEBUG
 		printf("Inserimento del carattere [%c]\n", stringa->down->carattere);
 	#endif
 	parola++;
 	}
 
-	stringa->down=caricaLettera('\0',segno,contaLettere);
+	stringa->down=caricaLettera('\0',segno);
 #ifdef DEBUG
 	printf("Inserimento del carattere [%c]\n",stringa->down->carattere);
 #endif
@@ -198,4 +197,12 @@ void cercaParolaLunga(char *parola, char *parolaLunga, int *max) {
 		*tmp='\0';
 	}
 	return;
+}
+
+void completion(lettera *completion) {
+	printf(" - completion - ");
+	while (completion->down->carattere!='\0') {
+		printf("%c",completion->down->carattere);
+		completion=completion->down;
+	}
 }
