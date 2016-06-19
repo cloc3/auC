@@ -5,12 +5,17 @@ http://simplestcodings.blogspot.it/2012/11/trie-implementation-in-c.html
 */
 
 #include <cstdio>
+#include <unistd.h>
+#include <termios.h>
+
 #include <cassert>
 
 #include "auClib.h"
 #include "pwd.h"
 
 #define BUF_SIZE 200
+
+int getch(void);
 
 int main() {
 	int i,N;
@@ -49,6 +54,7 @@ int main() {
 	bufferEnd=buffer;
 
 /* lettura del primo carattere */
+	*streamPointer=getch();
 	while (*streamPointer=='\b' || *streamPointer=='\n') streamPointer++;
 	*bufferEnd++=*streamPointer++;
 	bufferPointer=buffer;
@@ -61,6 +67,7 @@ int main() {
 
 	/* lettura del resto dell' input */
 	while (*streamPointer!='\n') {
+		*streamPointer=getch();
 		if (bufferEnd==buffer) while (*streamPointer=='\b') streamPointer++;
 		/* gestione carattere di backspace"*/
 		if (*streamPointer=='\b') {
@@ -92,3 +99,19 @@ int main() {
 	}
 	return 0;
 }
+
+int getch(void)
+{
+  int ch;
+  struct termios oldt;
+  struct termios newt;
+  tcgetattr(STDIN_FILENO, &oldt); /*store old settings */
+  newt = oldt; /* copy old settings to new settings */
+  newt.c_lflag &= ~(ICANON | ECHO); /* make one change to old settings in new settings */
+  tcsetattr(STDIN_FILENO, TCSANOW, &newt); /*apply the new settings immediatly */
+  ch = getchar(); /* standard getchar call */
+  tcsetattr(STDIN_FILENO, TCSANOW, &oldt); /*reapply the old settings */
+  return ch; /*return received char */
+}
+
+
