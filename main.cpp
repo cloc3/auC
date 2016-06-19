@@ -19,6 +19,7 @@ int getch(void);
 
 int main() {
 	int i,N;
+	int firstChar=0;
 	int lockFlag=0;
 	lettera *root;
 	char **uList;
@@ -27,7 +28,6 @@ int main() {
 	char buffer[BUF_SIZE];
 	char *streamPointer;
 	char *bufferEnd;
-	char *bufferPointer;
 	lettera *stack[BUF_SIZE];
 	lettera **stackPointer;
 
@@ -54,23 +54,26 @@ int main() {
 	bufferEnd=buffer;
 
 /* lettura del primo carattere */
-	*streamPointer=getch();
-	while (*streamPointer=='\b' || *streamPointer=='\n') streamPointer++;
+	*stackPointer=NULL;
+	while (*stackPointer==NULL) {
+		*streamPointer=getch();
+ 		*stackPointer=cercaCarattere(root->down,*streamPointer);
+	}
+	*buffer=*streamPointer;
 	*bufferEnd++=*streamPointer++;
-	bufferPointer=buffer;
- 	*stackPointer=cercaCarattere(root->down,*bufferPointer++);
 	*bufferEnd='\0';
 	printf("%s",buffer);
-	/* autocompletion: identico a quello delle lettere successive */
 	completion(*stackPointer);
+		/* autocompletion: identico a quello delle lettere successive */
+	//printf("\nnext char: %c %d %x\n",*streamPointer,*streamPointer,*streamPointer);
 	printf("\n---\n");
 
 	/* lettura del resto dell' input */
-	while (*streamPointer!='\n') {
 		*streamPointer=getch();
-		if (bufferEnd==buffer) while (*streamPointer=='\b') streamPointer++;
+	while (*streamPointer!='\n') {
+		if (bufferEnd==buffer) while (*streamPointer=='\x7f') streamPointer++;
 		/* gestione carattere di backspace"*/
-		if (*streamPointer=='\b') {
+		if (*streamPointer=='\x7f') {
 			streamPointer++;
 			bufferEnd--;
 			*bufferEnd='\0';
@@ -95,6 +98,8 @@ int main() {
 				stackPointer--;
 			}
 			}
+		*streamPointer=getch();
+		//printf("\nnext char: %c %d %x\n",*streamPointer,*streamPointer,*streamPointer);
 		printf("\n---\n");
 	}
 	return 0;
