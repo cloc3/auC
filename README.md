@@ -13,7 +13,4 @@ pwd.cpp takes usernames from /etc/passwd file using getpwent().
 auC.cpp stores username in a trie database.
 main.cpp simulates an autocompletion using the "char flusso[]" vector as input.
 
-to change input modify "flusso" at line 23 or rewrite the program by yourself.
-:)
-
 variable names and comments are in italian language.
