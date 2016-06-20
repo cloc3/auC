@@ -34,7 +34,7 @@ void marcaParola(lettera *radice, const char *parola, int segno) {
 	}
 }
 
-lettera *cercaCarattere(lettera *radice, char carattere) {
+lettera *findCharacter(lettera *radice, char carattere) {
 	lettera *livello=radice;
 	lettera *pt;
 
