@@ -99,7 +99,7 @@ lettera *caricaLettera(char carattere, int segno) {
 	return nodo;
 }
 
-void aggiungiStringa(lettera **radice, char *parola, int segno) {
+void addString(lettera **radice, char *parola, int segno) {
 	lettera *stringa;
 	/* controllo radice */
 	if (NULL == *radice) {printf("albero vuoto");return;}
@@ -144,7 +144,7 @@ void aggiungiStringa(lettera **radice, char *parola, int segno) {
 	while(stringa->dx) {
 		if(*parola == stringa->dx->carattere) {
 			parola++;
-			aggiungiStringa(&(stringa->dx),parola,segno);
+			addString(&(stringa->dx),parola,segno);
 			return;
 		}
 		stringa=stringa->dx;

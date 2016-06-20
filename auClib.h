@@ -5,7 +5,7 @@ typedef struct foglia lettera;
 
 /* prototipi globali (utilizzati anche dalla funzione main) */
 void makeTrie(lettera**);
-void aggiungiStringa(lettera**,char*,int);
+void addString(lettera**,char*,int);
 lettera *findCharacter(lettera*,char);
 lettera *ricerca(lettera*,char*);
 void marcaParola(lettera *radice,const char *,int);

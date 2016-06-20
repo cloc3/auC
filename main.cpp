@@ -33,7 +33,7 @@ int main() {
 	uList=userList(&N);
 	for(i=0; i<N; i++) {
 			username=uList[i];
-			aggiungiStringa(&root,username,0);
+			addString(&root,username,0);
 	}
 
 	stackPointer=stack;
