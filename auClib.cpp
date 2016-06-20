@@ -3,7 +3,7 @@
 
 #include "auClib.h"
 
-void creaAlbero(lettera **radice) {
+void makeTrie(lettera **radice) {
 	*radice = caricaLettera('\0',0);
 }
 
