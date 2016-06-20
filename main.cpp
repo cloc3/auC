@@ -19,14 +19,12 @@ int getch(void);
 
 int main() {
 	int i,N;
-	int firstChar=0;
+	char c;
 	int lockFlag=0;
 	lettera *root;
 	char **uList;
 	char *parola;
-	char stream[BUF_SIZE]={'t','v','h','e','\b','e','a','r','u','\b','\b','d','e','\n'};
 	char buffer[BUF_SIZE];
-	char *streamPointer;
 	char *bufferEnd;
 	lettera *stack[BUF_SIZE];
 	lettera **stackPointer;
@@ -36,7 +34,7 @@ int main() {
 	freopen("output.txt", "w", stdout);
 #endif
 
-	creaAlbero(&root);
+	makeTrie(&root);
 
 	/* lettura /etc/passwd e popola il trie degli usernames */
 	uList=userList(&N);
@@ -49,57 +47,54 @@ int main() {
 	}
 
 /* inizializzazioni */
-	streamPointer=stream;
 	stackPointer=stack;
 	bufferEnd=buffer;
-
-/* lettura del primo carattere */
-	*stackPointer=NULL;
-	while (*stackPointer==NULL) {
-		*streamPointer=getch();
- 		*stackPointer=cercaCarattere(root->down,*streamPointer);
-	}
-	*buffer=*streamPointer;
-	*bufferEnd++=*streamPointer++;
-	*bufferEnd='\0';
-	printf("%s",buffer);
-	completion(*stackPointer);
-		/* autocompletion: identico a quello delle lettere successive */
-	//printf("\nnext char: %c %d %x\n",*streamPointer,*streamPointer,*streamPointer);
-	printf("\n---\n");
+	c='\0';
 
 	/* lettura del resto dell' input */
-		*streamPointer=getch();
-	while (*streamPointer!='\n') {
-		if (bufferEnd==buffer) while (*streamPointer=='\x7f') streamPointer++;
-		/* gestione carattere di backspace"*/
-		if (*streamPointer=='\x7f') {
-			streamPointer++;
-			bufferEnd--;
-			*bufferEnd='\0';
-			printf("%s",buffer);
-			if (lockFlag>1) lockFlag--;
-			else if (lockFlag==1) {
-				completion(*(stackPointer));
-				lockFlag=0;
+	while (c!='\n') {
+		if (bufferEnd==buffer) {
+			*stackPointer=NULL;
+			while (*stackPointer==NULL) {
+				*buffer=getch();
+				if (*buffer=='\n') return 0;
+ 				*stackPointer=cercaCarattere(root->down,*buffer);
 			}
-			else completion(*(--stackPointer));
+			*(++bufferEnd)='\0';
+			printf("%s",buffer);
+			completion(*stackPointer);
 		} else {
-			*bufferEnd++=*streamPointer++;
-			*bufferEnd='\0';
-			printf("%s",buffer);
-			/* ricerca con accesso al database della stringa contenuta nel vettore "buffer"*/
-			*stackPointer=cercaCarattere((*stackPointer++)->down,*(bufferEnd-1));
-			/* autocompletion: naviga direttamente il trie */
-			if (*stackPointer!=NULL) {
-				completion(*stackPointer);
+			/* gestione carattere di backspace"*/
+			c=getch();
+			if (c=='\x7f') {
+				if (stackPointer>stack) {
+					*(--bufferEnd)='\0';
+					printf("%s",buffer);
+					if (lockFlag>1) lockFlag--;
+					else if (lockFlag==1) {
+						completion(*(stackPointer));
+						lockFlag=0;
+					}
+					else completion(*(--stackPointer));
+				} else {
+					*buffer='\0';
+					bufferEnd--;
+				}
 			} else {
-				lockFlag++;
-				stackPointer--;
+				*bufferEnd++=c;
+				*bufferEnd='\0';
+				printf("%s",buffer);
+				/* ricerca con accesso al database della stringa contenuta nel vettore "buffer"*/
+				*stackPointer=cercaCarattere((*stackPointer++)->down,c);
+				/* autocompletion: naviga direttamente il trie */
+				if (*stackPointer!=NULL) {
+					completion(*stackPointer);
+				} else {
+					lockFlag++;
+					stackPointer--;
+				}
 			}
-			}
-		*streamPointer=getch();
-		//printf("\nnext char: %c %d %x\n",*streamPointer,*streamPointer,*streamPointer);
+		}
 		printf("\n---\n");
 	}
 	return 0;
