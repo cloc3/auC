@@ -20,20 +20,20 @@ int main() {
 	int i,N;
 	char c='\0';
 	int lockFlag=0;
-	lettera *root;
+	letter *root;
 	char **uList;
 	char *username;
 	char buffer[BUF_SIZE]; /*bufferize input characters*/
 	char *bufferEnd;
-	lettera *stack[BUF_SIZE]; /*memorize current autocompletion characters*/
-	lettera **stackPointer;
+	letter *stack[BUF_SIZE]; /*memorize current autocompletion characters*/
+	letter **stackPointer;
 
 	/* make username trie */
 	makeTrie(&root);
 	uList=userList(&N);
 	for(i=0; i<N; i++) {
 			username=uList[i];
-			addString(&root,username,0);
+			addStringToTrie(&root,username,0);
 	}
 
 	stackPointer=stack;
@@ -74,7 +74,8 @@ int main() {
 				*bufferEnd='\0';
 				printf("%s",buffer);
 				/* find last character in the trie*/
-				*stackPointer=findCharacter((*stackPointer++)->down,c);
+				stackPointer++;
+				*stackPointer=findCharacter((*(stackPointer-1))->down,c);
 				/* start autocompletion */
 				if (*stackPointer!=NULL) {
 					completion(*stackPointer);

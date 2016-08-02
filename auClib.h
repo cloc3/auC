@@ -1,26 +1,23 @@
 #ifndef auC_H
 #define auC_H
 
-typedef struct foglia lettera;
+typedef struct leaf letter;
 
 /* prototipi globali (utilizzati anche dalla funzione main) */
-void makeTrie(lettera**);
-void addString(lettera**,char*,int);
-lettera *findCharacter(lettera*,char);
-lettera *ricerca(lettera*,char*);
-void marcaParola(lettera *radice,const char *,int);
-void dfs(lettera*,int*);
-void cercaParolaLunga(char*,char*,int*);
-void completion(lettera*);
+void makeTrie(letter**);
+void addStringToTrie(letter**,char*,int);
+letter *findCharacter(letter*,char);
+letter *searchLetter(letter*,char*);
+void completion(letter*);
 
 /* prototipi locali (utilizzati internamente dalle funzioni)*/
-lettera	*caricaLettera(char, int);
+letter	*addLetterToTrie(char, int);
 
-struct foglia {
-	char carattere;
-	int segno;
-	lettera *dx;
-	lettera *down;
+struct leaf {
+	char character;
+	int sign;
+	letter *dx;
+	letter *down;
 };
 
 #endif

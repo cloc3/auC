@@ -3,48 +3,20 @@
 
 #include "auClib.h"
 
-void makeTrie(lettera **radice) {
-	*radice = caricaLettera('\0',0);
+void makeTrie(letter **root) {
+	*root = addLetterToTrie('\0',0);
 }
 
-void marcaParola(lettera *radice, const char *parola, int segno) {
-	lettera *livello=radice;
-
-	while(1) {
-		lettera *trovato=NULL;
-		lettera *pt;
-
-		for (pt=livello;pt != NULL;pt=pt->dx) {
-			if(pt->carattere==*parola) {
-				trovato=pt;
-				pt->segno=segno;
-				break;
-			}
-		}
-
-		if (trovato==NULL) return;
-
-		if (*parola=='\0') {
-			pt->segno=segno;
-			return;
-		}
-
-		livello=trovato->down;
-		parola++;
-	}
-}
-
-lettera *findCharacter(lettera *radice, char carattere) {
-	lettera *livello=radice;
-	lettera *pt;
+letter *findCharacter(letter *currentLeaf, char character) {
+	letter *pt;
 
 	/* scorre verso destra fino all'ultima lettera del trie,
-	* senza salire di livello, alla ricerca di una lettera uguale
-	* alla lettera iniziale di carattere */
+	* senza salire di localRoot, alla searchLetter di una lettera uguale
+	* alla letter iniziale di character */
 
 	while(1) {
-		for (pt=livello;pt != NULL;pt=pt->dx) {
-			if(pt->carattere==carattere) {
+		for (pt=currentLeaf;pt != NULL;pt=pt->dx) {
+			if(pt->character==character) {
 				return pt;
 			}
 		}
@@ -52,157 +24,135 @@ lettera *findCharacter(lettera *radice, char carattere) {
 	}
 }
 
-lettera *completamento(lettera *radice, char *parola) {
-	lettera *livello=radice;
-	lettera *stringa=NULL;
-
+letter *readWord(letter *currentLeaf, char *word) {
 	/* scorre verso destra fino all'ultima lettera del trie,
-	* senza salire di livello, alla ricerca di una lettera uguale
-	* alla lettera iniziale di *parola */
+	* senza salire di localRoot, alla searchLetter di una letter uguale
+	* alla letter iniziale di *word */
 
 	while(1) {
-		lettera *trovato=NULL;
-		lettera *pt;
+		letter *nextLetter=NULL;
+		letter *pt;
 
-		for (pt=livello;pt != NULL;pt=pt->dx) {
-			if(pt->carattere==*parola) {
-				trovato=pt;
+		for (pt=currentLeaf;pt != NULL;pt=pt->dx) {
+			if(pt->character==*word) {
+				nextLetter=pt;
 				break;
 			}
 		}
 
-		if (trovato==NULL) return NULL;
+		if (nextLetter==NULL) return NULL;
 
-		if (*parola=='\0') {
-			stringa=pt;
-			return stringa;
+		if (*word=='\0') {
+			letter *endOfString=pt;
+			return pt;
 		}
 
-		livello=trovato->down;
-		parola++;
+		currentLeaf=nextLetter->down;
+		word++;
 	}
 }
 
-lettera *caricaLettera(char carattere, int segno) {
-	lettera *nodo = NULL;
-	nodo=(lettera *)malloc(sizeof(lettera));
+letter *addLetterToTrie(char character, int sign) {
+	//letter *nodo = NULL;
+	letter* nodo=(letter *)malloc(sizeof(letter));
 
 #ifdef DEBUG
 	/* controllo di malloc */
 	if (NULL == nodo) {printf("errore Malloc");return NULL;}
 #endif
 
-	nodo->carattere=carattere;
+	nodo->character=character;
 	nodo->dx=NULL;
 	nodo->down=NULL;
-	nodo->segno=segno;
+	nodo->sign=sign;
 	return nodo;
 }
 
-void addString(lettera **radice, char *parola, int segno) {
-	lettera *stringa;
-	/* controllo radice */
-	if (NULL == *radice) {printf("albero vuoto");return;}
+void addStringToTrie(letter **root, char *word, int sign) {
+	letter *stringCursor;
+	/* controllo root */
+	if (NULL == *root) {printf("albero vuoto");return;}
 
 #ifdef DEBUG
-	printf("\nInserimento stringa: %s\n", parola);
+	printf("\nInserimento stringCursor: %s\n", word);
 #endif
-	stringa=(*radice)->down;
+	stringCursor=(*root)->down;
 
-	if (stringa==NULL) {
-		for(stringa=*radice;*parola;stringa=stringa->down) {
-			stringa->down=caricaLettera(*parola,segno);
+	if (stringCursor==NULL) {
+		for(stringCursor=*root;*word;stringCursor=stringCursor->down) {
+			stringCursor->down=addLetterToTrie(*word,sign);
 		#ifdef DEBUG
-			printf("Ho inserito la lettera: [%c]\n", stringa->down->carattere);
+			printf("Ho inserito la lettera: [%c]\n", stringCursor->down->character);
 		#endif
-			parola++;
+			word++;
 		}
 
-		stringa->down=caricaLettera('\0',segno);
+		stringCursor->down=addLetterToTrie('\0',sign);
 	#ifdef DEBUG
-		printf("\nInserimento carattere: [%c]\n",stringa->down->carattere);
+		printf("\nInserimento carattere: [%c]\n",stringCursor->down->character);
 	#endif
 		return;
 	}
 
-	if(completamento(stringa, parola)){
-		printf("parola %s duplicata!\n",parola);
+	if(readWord(stringCursor, word)){
+		printf("word %s duplicata!\n",word);
 	}
 
-	while(*parola != '\0') {
-		if (*parola == stringa->carattere) {
-			parola++;
+	while(*word != '\0') {
+		if (*word == stringCursor->character) {
+			word++;
 		#ifdef DEBUG
-			printf("scorrimento del carattere: [%c]\n",stringa->down->carattere);
+			printf("scorrimento del carattere: [%c]\n",stringCursor->down->character);
 		#endif
-			stringa=stringa->down;
+			stringCursor=stringCursor->down;
 		} else {
 			break;
 		}
 	}
 
-	while(stringa->dx) {
-		if(*parola == stringa->dx->carattere) {
-			parola++;
-			addString(&(stringa->dx),parola,segno);
+	while(stringCursor->dx) {
+		if(*word == stringCursor->dx->character) {
+			word++;
+			addStringToTrie(&(stringCursor->dx),word,sign);
 			return;
 		}
-		stringa=stringa->dx;
+		stringCursor=stringCursor->dx;
 	}
 
-	if (*parola) {	//l'if avrebbe senso se volessi distinguere i casi in cui voglio attribuire a segno un valore diverso per i fine parola
-		stringa->dx=caricaLettera(*parola,segno);
+	if (*word) {	//l'if avrebbe senso se volessi distinguere i casi in cui voglio attribuire a sign un valore diverso per i fine word
+		stringCursor->dx=addLetterToTrie(*word,sign);
 	} else {
-		stringa->dx=caricaLettera(*parola,segno);
+		stringCursor->dx=addLetterToTrie(*word,sign);
 	}
 
 #ifdef DEBUG
-	printf("Ho inserito la prima lettera [%c] della nuova stringa a destra della lettera [%c]\n",stringa->dx->carattere, stringa->carattere);
+	printf("Ho inserito la prima letter [%c] della nuova stringCursor a destra della letter [%c]\n",stringCursor->dx->character, stringCursor->character);
 #endif
 
-	if(!(*parola)) return;
-	parola++;
+	if(!(*word)) return;
+	word++;
 
-	for(stringa=stringa->dx; *parola; stringa=stringa->down) {
-		stringa->down=caricaLettera(*parola,segno);
+	for(stringCursor=stringCursor->dx; *word; stringCursor=stringCursor->down) {
+		stringCursor->down=addLetterToTrie(*word,sign);
 	#ifdef DEBUG
-		printf("Inserimento del carattere [%c]\n", stringa->down->carattere);
+		printf("Inserimento del character [%c]\n", stringCursor->down->character);
 	#endif
-	parola++;
+	word++;
 	}
 
-	stringa->down=caricaLettera('\0',segno);
+	stringCursor->down=addLetterToTrie('\0',sign);
 #ifdef DEBUG
-	printf("Inserimento del carattere [%c]\n",stringa->down->carattere);
+	printf("Inserimento del character [%c]\n",stringCursor->down->character);
 #endif
 	return;
 }
 
 /* fine gestione dell'albero */
 
-void cercaParolaLunga(char *parola, char *parolaLunga, int *max) {
-	char *tmp,*pMax;
-	int n;
-
-	n=0;
-	pMax=parola;
-	while (*parola++) n++;
-	if (*max < n) {
-		*max=n;
-		tmp=parolaLunga;
-		while (*pMax != '\0') {
-			*tmp=*pMax++;
-			tmp++;
-		}
-		*tmp='\0';
-	}
-	return;
-}
-
-void completion(lettera *completion) {
+void completion(letter *completion) {
 	printf(" - completion - ");
-	while (completion->down->carattere!='\0') {
-		printf("%c",completion->down->carattere);
+	while (completion->down->character!='\0') {
+		printf("%c",completion->down->character);
 		completion=completion->down;
 	}
 }
