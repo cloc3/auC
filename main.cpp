@@ -18,7 +18,7 @@ int main() {
 	lettera *root;
 	char **uList;
 	char *parola;
-	char stream[BUF_SIZE]={'t','v','h','e','\b','e','a','r','u','\b','\b','d','e','\n'};
+	char stream[BUF_SIZE]={'t','v','h','\b','\b','h','v','\b','\b','e','\b','e','a','r','u','\b','\b','d','e','\n'};
 	char buffer[BUF_SIZE];
 	char *streamPointer;
 	char *bufferEnd;
