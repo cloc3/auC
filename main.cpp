@@ -23,6 +23,9 @@ int main() {
 	letter *root;
 	char **uList;
 	char *username;
+/*
+  	char stream[BUF_SIZE]={'t','v','h','\b','\b','h','v','\b','\b','e','\b','e','a','r','u','\b','\b','d','e','\n'};
+*/
 	char buffer[BUF_SIZE]; /*bufferize input characters*/
 	char *bufferEnd;
 	letter *stack[BUF_SIZE]; /*memorize current autocompletion characters*/
@@ -37,55 +40,45 @@ int main() {
 	}
 
 	stackPointer=stack;
+	(*stackPointer++)=root;
 	bufferEnd=buffer;
 
 	/* autocompletion start */
 	printf("type your username (return to exit)\n");
 	while (c!='\n') {
-		/* first character */
-		if (bufferEnd==buffer) {
-			*stackPointer=NULL;
-			while (*stackPointer==NULL) {
-				*buffer=getch();
-				if (*buffer=='\n') return 0;
- 				*stackPointer=findCharacter(root->down,*buffer);
-			}
-			*(++bufferEnd)='\0';
+/*
+ * prima di tutto acquisisco un nuovo carattere e aggiorno il buffer
+*/
+		c=getch();
+		if (c==DEL) {
+			if (buffer<bufferEnd) *(--bufferEnd)='\0';
 			printf("%s",buffer);
-			completion(*stackPointer);
+			if (lockFlag) {
+				if (--lockFlag);
+				else {
+					if (buffer<bufferEnd) completion(*(stackPointer-1));
+				}
+			}
+			else {
+				if (stack<stackPointer-1) stackPointer--;
+				if (buffer<bufferEnd) completion((*(stackPointer-1)));
+			}
 		} else {
-			c=getch();
-			if (c==DEL) {
-				/* manage delete character"*/
-				if (stackPointer==stack) {
-					*(--bufferEnd)='\0';
-					printf("%s",buffer);
-				} else {
-					*(--bufferEnd)='\0';
-					printf("%s",buffer);
-					if (lockFlag>1) lockFlag--;
-					else if (lockFlag==1) {
-						completion(*(stackPointer));
-						lockFlag=0;
-					 } else completion(*(--stackPointer));
-				}
+			if (c=='\n') return 0;
+			*bufferEnd++=c;
+			*bufferEnd='\0';
+			printf("%s",buffer);
+	/* prima di ogni azione verifico lo stato di blocco */
+		if (lockFlag) lockFlag++;
+		else {
+			*stackPointer=findCharacter((*(stackPointer-1))->down,c);
+			if (*stackPointer==NULL) {
+				lockFlag=1;
 			} else {
-				*bufferEnd++=c;
-				*bufferEnd='\0';
-				printf("%s",buffer);
-				/* find last character in the trie*/
-				stackPointer++;
-				*stackPointer=findCharacter((*(stackPointer-1))->down,c);
-				/* start autocompletion */
-				if (*stackPointer!=NULL) {
-					completion(*stackPointer);
-				} else {
-					lockFlag++;
-					stackPointer--;
-				}
+				completion(*(stackPointer++));
 			}
 		}
-		printf("\n---\n");
+		} printf("\n---\n");
 	}
 	return 0;
 }
